@@ -18,14 +18,15 @@ class Stok_rpk extends REST_Controller{
 
     public function index_get() {
         $id = ($this->get('idtoko', TRUE)) ? $this->get('idtoko', TRUE) : '';
+        $status = ($this->get('status', TRUE) && $this->get('status', TRUE)=="1") ? "AND status_stok_rpk='1'" : "AND status_stok_rpk='0'";
         if(!empty($id)) {
             /*$data = $this->m_app->myquery_array("SELECT *, SUM(jumlah_komoditi_stok_rpk) AS JUMLAH, @rownum := @rownum+1 as myindex FROM tb_stok_rpk AS A, tb_komoditi AS B,
 (SELECT @rownum := 0) as Z WHERE A.id_komoditi_stok_rpk=B.ID_KOMODITI AND id_komoditi_stok_rpk='".$id."' GROUP BY id_komoditi_stok_rpk, id_toko_stok_rpk");*/
-            $data = $this->m_app->myquery_array("SELECT A.*,B.*, D.*, SUM(jumlah_komoditi_stok_rpk)-IFNULL(C.JUMLAH, '0') AS JUMLAH, E.NAMA_ENTITAS FROM tb_stok_rpk AS A LEFT JOIN (SELECT id_toko_penjualan_rpk, id_komoditi_penjualan_rpk, SUM(jumlah_komoditi_penjualan_rpk) AS JUMLAH FROM tb_penjualan_rpk WHERE id_toko_penjualan_rpk='".$id."' GROUP BY id_toko_penjualan_rpk, id_komoditi_penjualan_rpk) AS C ON A.id_toko_stok_rpk=C.id_toko_penjualan_rpk AND A.id_komoditi_stok_rpk=C.id_komoditi_penjualan_rpk, tb_komoditi AS B, tb_toko AS D, entitas AS E WHERE A.id_komoditi_stok_rpk=B.ID_KOMODITI AND A.id_toko_stok_rpk=D.ID_TOKO AND D.IDENTITAS_TOKO=E.ID_ENTITAS AND id_toko_stok_rpk='".$id."' GROUP BY id_komoditi_stok_rpk, id_toko_stok_rpk ORDER BY id_komoditi_stok_rpk");
+            $data = $this->m_app->myquery_array("SELECT A.*,B.*, D.*, SUM(jumlah_komoditi_stok_rpk)-IFNULL(C.JUMLAH, '0') AS JUMLAH, E.NAMA_ENTITAS FROM tb_stok_rpk AS A LEFT JOIN (SELECT id_toko_penjualan_rpk, id_komoditi_penjualan_rpk, SUM(jumlah_komoditi_penjualan_rpk) AS JUMLAH FROM tb_penjualan_rpk WHERE id_toko_penjualan_rpk='".$id."' GROUP BY id_toko_penjualan_rpk, id_komoditi_penjualan_rpk) AS C ON A.id_toko_stok_rpk=C.id_toko_penjualan_rpk AND A.id_komoditi_stok_rpk=C.id_komoditi_penjualan_rpk, tb_komoditi AS B, tb_toko AS D, entitas AS E WHERE A.id_komoditi_stok_rpk=B.ID_KOMODITI AND A.id_toko_stok_rpk=D.ID_TOKO AND D.IDENTITAS_TOKO=E.ID_ENTITAS AND id_toko_stok_rpk='".$id."' ".$status." GROUP BY id_komoditi_stok_rpk, id_toko_stok_rpk ORDER BY id_komoditi_stok_rpk");
         }else{
            /* $data = $this->m_app->myquery_array('SELECT *, SUM(jumlah_komoditi_stok_rpk) AS JUMLAH, @rownum := @rownum+1 as myindex FROM tb_stok_rpk AS A, tb_komoditi AS B,
 (SELECT @rownum := 0) as Z WHERE A.id_komoditi_stok_rpk=B.ID_KOMODITI GROUP BY id_komoditi_stok_rpk, id_toko_stok_rpk');*/
-            $data = $this->m_app->myquery_array("SELECT A.*,B.*, D.*, SUM(jumlah_komoditi_stok_rpk)-IFNULL(C.JUMLAH, '0') AS JUMLAH, E.NAMA_ENTITAS FROM tb_stok_rpk AS A LEFT JOIN (SELECT id_toko_penjualan_rpk, id_komoditi_penjualan_rpk, SUM(jumlah_komoditi_penjualan_rpk) AS JUMLAH FROM tb_penjualan_rpk GROUP BY id_toko_penjualan_rpk, id_komoditi_penjualan_rpk) AS C ON A.id_toko_stok_rpk=C.id_toko_penjualan_rpk AND A.id_komoditi_stok_rpk=C.id_komoditi_penjualan_rpk, tb_komoditi AS B, tb_toko AS D, entitas AS E WHERE A.id_komoditi_stok_rpk=B.ID_KOMODITI AND A.id_toko_stok_rpk=D.ID_TOKO AND D.IDENTITAS_TOKO=E.ID_ENTITAS GROUP BY id_komoditi_stok_rpk, id_toko_stok_rpk ORDER BY id_komoditi_stok_rpk");
+            $data = $this->m_app->myquery_array("SELECT A.*,B.*, D.*, SUM(jumlah_komoditi_stok_rpk)-IFNULL(C.JUMLAH, '0') AS JUMLAH, E.NAMA_ENTITAS FROM tb_stok_rpk AS A LEFT JOIN (SELECT id_toko_penjualan_rpk, id_komoditi_penjualan_rpk, SUM(jumlah_komoditi_penjualan_rpk) AS JUMLAH FROM tb_penjualan_rpk GROUP BY id_toko_penjualan_rpk, id_komoditi_penjualan_rpk) AS C ON A.id_toko_stok_rpk=C.id_toko_penjualan_rpk AND A.id_komoditi_stok_rpk=C.id_komoditi_penjualan_rpk, tb_komoditi AS B, tb_toko AS D, entitas AS E WHERE A.id_komoditi_stok_rpk=B.ID_KOMODITI AND A.id_toko_stok_rpk=D.ID_TOKO AND D.IDENTITAS_TOKO=E.ID_ENTITAS ".$status." GROUP BY id_komoditi_stok_rpk, id_toko_stok_rpk ORDER BY id_komoditi_stok_rpk");
         }
             $array = array();
             if ($data) {
@@ -52,6 +53,88 @@ class Stok_rpk extends REST_Controller{
             }
             $this->response(array('aaData' => $array, 'sEcho' => '1', 'recordsTotal' => count($data), 'recordsFiltered' => count($data)), REST_Controller::HTTP_OK);
 
+    }
+
+    public function allrequest_get() {
+        $id = ($this->get('idtoko', TRUE)) ? $this->get('idtoko', TRUE) : '';
+       // $status = (($this->get('status', TRUE)) ? (($this->get('status', TRUE) === "0") ? "AND status_stok_rpk='0'" : "AND status_stok_rpk='1'") :"");
+        $status = "";
+            if($this->get('status', TRUE) == "1"){
+                $status = "AND status_stok_rpk='1'";
+            }else if($this->get('status', TRUE) == "0"){
+                $status = "AND status_stok_rpk='0'";
+            }else if($this->get('status', TRUE) == "all"){
+                $status = "";
+            }
+        //$status = ($this->get('status', TRUE) && $this->get('status', TRUE)=="1") ? "AND status_stok_rpk='1'" : "AND status_stok_rpk='0'";
+        if(!empty($id)) {
+            $data = $this->m_app->myquery_array("SELECT A.*,B.*, D.*, SUM(jumlah_komoditi_stok_rpk) AS JUMLAH, SUM(jumlah_komoditi_stok_rpk*HARGA_KOMODITI) AS total, E.NAMA_ENTITAS FROM tb_stok_rpk AS A, tb_komoditi AS B, tb_toko AS D, entitas AS E WHERE A.id_komoditi_stok_rpk=B.ID_KOMODITI AND A.id_toko_stok_rpk=D.ID_TOKO AND D.IDENTITAS_TOKO=E.ID_ENTITAS AND id_toko_stok_rpk='".$id."' ".$status." GROUP BY noreq_stok_rpk ORDER BY status_stok_rpk ASC, tanggal_stok_rpk DESC");
+        }else{
+            $data = $this->m_app->myquery_array("SELECT A.*,B.*, D.*, SUM(jumlah_komoditi_stok_rpk) AS JUMLAH, SUM(jumlah_komoditi_stok_rpk*HARGA_KOMODITI) AS total, E.NAMA_ENTITAS FROM tb_stok_rpk AS A, tb_komoditi AS B, tb_toko AS D, entitas AS E WHERE A.id_komoditi_stok_rpk=B.ID_KOMODITI AND A.id_toko_stok_rpk=D.ID_TOKO AND D.IDENTITAS_TOKO=E.ID_ENTITAS ".$status." GROUP BY noreq_stok_rpk ORDER BY status_stok_rpk ASC, tanggal_stok_rpk DESC");
+        }
+        $array = array();
+        if ($data) {
+            foreach ($data as $row) {
+                $array[] = array(
+                    $row['id_stok_rpk'], //0
+                    $row['noreq_stok_rpk'],//1
+                    $row['id_komoditi_stok_rpk'],//2
+                    $row['id_toko_stok_rpk'],//3
+                    $row['tanggal_stok_rpk'],//4
+                    $row['NAMA_TOKO'],//5
+                    $row['NAMA_ENTITAS'],//6
+                    $row['JUMLAH'],//7
+                    $row['total'],//8
+                    $row['status_stok_rpk'],//9
+                );
+            }
+
+        }
+        $this->response(array('aaData' => $array, 'sEcho' => '1', 'recordsTotal' => count($data), 'recordsFiltered' => count($data)), REST_Controller::HTTP_OK);
+
+    }
+
+    public function detail_get() {
+        $id = ($this->get('noreq', TRUE)) ? $this->get('noreq', TRUE) : '';
+        if(!empty($id)) {
+            $data = $this->m_app->myquery_array("SELECT * FROM
+tb_stok_rpk AS A, tb_komoditi AS B, tb_toko AS C, entitas AS D WHERE A.id_komoditi_stok_rpk=B.ID_KOMODITI AND A.id_toko_stok_rpk=C.ID_TOKO AND C.IDENTITAS_TOKO=D.ID_ENTITAS AND A.noreq_stok_rpk='".$id."'");
+        }else{
+            $data = $this->m_app->myquery_array("SELECT * FROM
+tb_stok_rpk AS A, tb_komoditi AS B, tb_toko AS C, entitas AS D WHERE A.id_komoditi_stok_rpk=B.ID_KOMODITI AND A.id_toko_stok_rpk=C.ID_TOKO AND C.IDENTITAS_TOKO=D.ID_ENTITAS");
+        }
+        $array = array();
+        //  if ($data) {
+        foreach ($data as $row) {
+            $array[] = array(
+                $row['id_stok_rpk'], //0
+                $row['noreq_stok_rpk'],//1
+                $row['id_komoditi_stok_rpk'],//2
+                $row['tanggal_stok_rpk'],//3
+                $row['NAMA_KOMODITI'],//4
+                $row['UKURAN_KOMODITI'],//5
+                $row['harga_komoditi_stok_rpk'],//6
+                $row['ID_TOKO'],//7
+                $row['NAMA_TOKO'],//8
+                $row['NAMA_ENTITAS'],//9
+                $row['jumlah_komoditi_stok_rpk'],//10
+            );
+        }
+        //  }
+        $this->response(array('aaData' => $array, 'sEcho' => '1', 'recordsTotal' => count($data), 'recordsFiltered' => count($data)), REST_Controller::HTTP_OK);
+
+    }
+
+    public function verifikasi_get() {
+        $noreq = ($this->get('noreq', TRUE)) ? $this->get('noreq', TRUE) : '';
+        //$noreq = ($this->get('status', TRUE)) ? $this->get('noreq', TRUE) : '';
+        $cek = $this->m_app->update_data('tb_stok_rpk', array('status_stok_rpk'=>$this->get('status', TRUE)), array('noreq_stok_rpk' => $noreq));
+        if (!empty($cek)) {
+            //$this->m_app->insert_data('master_log', $data_log);
+            $this->response(array('status' => $cek, 'tname' => $this->tname, 'thash' => $this->thash), REST_Controller::HTTP_OK);
+        } else {
+            $this->response(array('status' => FALSE, 'message' => array('error' => 'Data could not be inserted'), 'tname' => $this->tname, 'thash' => $this->thash), REST_Controller::HTTP_OK); // NOT_FOUND (404) being the HTTP response code
+        }
     }
 
     public function allstok_get() {
@@ -112,6 +195,44 @@ class Stok_rpk extends REST_Controller{
                     $this->response(array('status' => FALSE, 'message' => array('error' => 'Data could not be inserted'), 'tname' => $this->tname, 'thash' => $this->thash), REST_Controller::HTTP_OK); // NOT_FOUND (404) being the HTTP response code
                 }
             }
+    }
+
+    public function insertreq_post() {
+        $this->form_validation->set_rules('kodebarang[]', 'Barang', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('norequest', 'No Request', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('tanggal', 'Tanggal', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('jumlah[]', 'Jumlah', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('harga[]', 'Harga', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('idtoko', 'Toko', 'trim|required|xss_clean');
+        //$this->form_validation->set_rules('dibayar', 'toko', 'trim|required|xss_clean');
+        //$this->form_validation->set_rules('idtoko', 'toko', 'trim|required|xss_clean');
+        if ($this->form_validation->run() == FALSE) {
+            $this->response(array('status' => FALSE, 'message' => $this->form_validation->error_array(), 'tname' => $this->tname, 'thash' => $this->thash), REST_Controller::HTTP_OK); // NOT_FOUND (404) being the HTTP response code
+        } else {
+
+            $idkomoditi = $this->post('kodebarang', TRUE);
+            $jumlah = $this->post('jumlah', TRUE);
+            $harga = $this->post('harga', TRUE);
+            for($i=0; $i<count($idkomoditi);$i++){
+                $data = array(
+                    'id_toko_stok_rpk' =>$this->post('idtoko', TRUE),
+                    'noreq_stok_rpk' =>$this->post('norequest', TRUE),
+                    'id_komoditi_stok_rpk' => $idkomoditi[$i],
+                    'harga_komoditi_stok_rpk' => $harga[$i],
+                    'jumlah_komoditi_stok_rpk' => $jumlah[$i],
+                    'tanggal_stok_rpk' => $this->post('tanggal', TRUE),
+                    'status_stok_rpk' => "0"
+                );
+                $cek = $this->m_app->insert_data('tb_stok_rpk', $data);
+                //  $this->m_app->myquery_array("UPDATE tb_stok_rpk SET jumlah_komoditi_stok_rpk=jumlah_komoditi_stok_rpk-".$jumlah[$i]." WHERE id_stok_rpk='' AND ");
+            }
+
+            if (!empty($cek)) {
+                $this->response(array('status' => $cek, 'tname' => $this->tname, 'thash' => $this->thash), REST_Controller::HTTP_OK);
+            } else {
+                $this->response(array('status' => FALSE, 'message' => array('error' => 'Data could not be saved'), 'tname' => $this->tname, 'thash' => $this->thash), REST_Controller::HTTP_OK); // NOT_FOUND (404) being the HTTP response code
+            }
+        }
     }
 
 

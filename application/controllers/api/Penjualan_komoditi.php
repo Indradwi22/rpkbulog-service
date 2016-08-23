@@ -62,7 +62,7 @@ tb_penjualan_rpk AS A, tb_komoditi AS B, tb_toko AS C, entitas AS D WHERE A.id_k
                 $row['tanggal_penjualan_rpk'],//3
                 $row['NAMA_KOMODITI'],//4
                 $row['UKURAN_KOMODITI'],//5
-                $row['HARGA_KOMODITI'],//6
+                $row['harga_komoditi_penjualan_rpk'],//6
                 $row['ID_TOKO'],//7
                 $row['NAMA_TOKO'],//8
                 $row['NAMA_ENTITAS'],//9
@@ -100,8 +100,8 @@ tb_penjualan_rpk AS A, tb_komoditi AS B, tb_toko AS C, entitas AS D WHERE A.id_k
             $this->form_validation->set_rules('jumlah[]', 'Jumlah', 'trim|required|xss_clean');
             $this->form_validation->set_rules('harga[]', 'Harga', 'trim|required|xss_clean');
             $this->form_validation->set_rules('idtoko', 'toko', 'trim|required|xss_clean');
-            $this->form_validation->set_rules('dibayar', 'toko', 'trim|required|xss_clean');
-            $this->form_validation->set_rules('idtoko', 'toko', 'trim|required|xss_clean');
+            $this->form_validation->set_rules('dibayar', 'Dibayar', 'trim|required|xss_clean');
+           // $this->form_validation->set_rules('idtoko', 'toko', 'trim|required|xss_clean');
             if ($this->form_validation->run() == FALSE) {
                 $this->response(array('status' => FALSE, 'message' => $this->form_validation->error_array(), 'tname' => $this->tname, 'thash' => $this->thash), REST_Controller::HTTP_OK); // NOT_FOUND (404) being the HTTP response code
             } else {

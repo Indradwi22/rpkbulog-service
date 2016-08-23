@@ -70,6 +70,24 @@ class Komoditi_rpk extends REST_Controller{
             }
     }
 
+    public function getrequest_get(){
+        $id = ($this->get('idtoko', TRUE)) ? $this->get('idtoko', TRUE) : '';
+        if(!empty($id)) {
+            $data_toko = $this->m_app->datatable("tb_toko",array('ID_TOKO'=>$id))[0];
+        }
+        $entitas = $data_toko['IDENTITAS_TOKO'];
+
+        $data = $this->m_app->myquery_array("SELECT * FROM tb_stok_rpk WHERE noreq_stok_rpk LIKE '%REQ".$entitas."%' ORDER BY id_stok_rpk DESC LIMIT 0,1");
+        $number = 0;
+        if($data){
+            $lastnota = $data[0]['noreq_stok_rpk'];
+            $number = explode('.',$lastnota)[1]+1;
+        }
+        //$full = "STR".$entitas.".".sprintf('%05d',$number);
+        $full = "REQ".$entitas.".".sprintf('%05d',$number);
+        $this->response(array('status' => $full, 'tname' => $this->tname, 'thash' => $this->thash), REST_Controller::HTTP_OK);
+    }
+
     public function update_post() {
             $this->form_validation->set_rules('id_toko', 'ID TOKO', 'trim|required|xss_clean');
             $this->form_validation->set_rules('nama', 'Nama Toko', 'trim|required|xss_clean');
