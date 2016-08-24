@@ -51,7 +51,7 @@ class M_app extends CI_Model
             );
             foreach ($data as $log): $login = array('iduser_webpasar' => $log['ID_USER']);  $data_log['IDUSER_LOG']=$log['ID_USER'];
             endforeach;*/
-            $return = "";
+            //$return = "";
             /*if($data[0]['ROLE_USER']){
                 $return = "ADMIN";
             }else{

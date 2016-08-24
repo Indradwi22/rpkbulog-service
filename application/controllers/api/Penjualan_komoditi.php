@@ -81,7 +81,7 @@ tb_penjualan_rpk AS A, tb_komoditi AS B, tb_toko AS C, entitas AS D WHERE A.id_k
         }
         $entitas = $data_toko['IDENTITAS_TOKO'];
 
-        $data = $this->m_app->myquery_array("SELECT * FROM tb_penjualan_rpk WHERE no_nota_penjualan_rpk LIKE '%STR".$entitas."%' ORDER BY id_penjualan_rpk DESC LIMIT 0,1");
+        $data = $this->m_app->myquery_array("SELECT * FROM tb_penjualan_rpk WHERE no_nota_penjualan_rpk LIKE '%STR".$entitas."%' ORDER BY no_nota_penjualan_rpk DESC LIMIT 0,1");
         $number = 0;
         if($data){
             $lastnota = $data[0]['no_nota_penjualan_rpk'];

@@ -48,6 +48,33 @@ class Toko_rpk extends REST_Controller{
 
     }
 
+    public function listmap_get() {
+        $data = $this->m_app->myquery_array("SELECT * FROM tb_toko AS A, entitas AS B, tb_user AS C WHERE A.IDENTITAS_TOKO=B.ID_ENTITAS AND A.ID_TOKO=C.IDTOKO_USER");
+        $array = array();
+        if ($data) {
+            foreach ($data as $row) {
+                $array[] = array(
+                    'idtoko'=>$row['ID_TOKO'],
+                    'namatoko'=>$row['NAMA_TOKO'],
+                    'identitas'=>$row['IDENTITAS_TOKO'],
+                    'npwp'=>$row['NPWP_TOKO'],
+                    'alamat'=>$row['ALAMAT_TOKO'],
+                    'telp'=>$row['TELP_TOKO'],
+                    'keterangan'=>$row['KETERANGAN_TOKO'],
+                    'location' => array($row['LAT_TOKO'],$row['LONG_TOKO']),
+                    'namaentitas'=>$row['NAMA_ENTITAS'],
+                    'username'=>$row['USERNAME_USER'],
+                    'role'=>$row['ROLE_USER'],
+                    'tanggal'=>$row['TANGGAL_TOKO'],
+                    'detail'=> $this->m_app->myquery_array("SELECT A.*,B.*, SUM(jumlah_komoditi_stok_rpk)-IFNULL(C.JUMLAH, '0') AS JUMLAH FROM tb_stok_rpk AS A LEFT JOIN (SELECT id_toko_penjualan_rpk, id_komoditi_penjualan_rpk, SUM(jumlah_komoditi_penjualan_rpk) AS JUMLAH FROM tb_penjualan_rpk WHERE id_toko_penjualan_rpk='".$row['ID_TOKO']."' GROUP BY id_toko_penjualan_rpk, id_komoditi_penjualan_rpk) AS C ON A.id_toko_stok_rpk=C.id_toko_penjualan_rpk AND A.id_komoditi_stok_rpk=C.id_komoditi_penjualan_rpk, tb_komoditi AS B WHERE A.id_komoditi_stok_rpk=B.ID_KOMODITI AND id_toko_stok_rpk='".$row['ID_TOKO']."' AND status_stok_rpk='1' GROUP BY id_komoditi_stok_rpk, id_toko_stok_rpk ORDER BY id_komoditi_stok_rpk")
+                );
+            }
+
+        }
+        $this->response(array('mydata' => $array, 'sEcho' => '1', 'recordsTotal' => count($data), 'recordsFiltered' => count($data)), REST_Controller::HTTP_OK);
+
+    }
+
     public function insert_post() {
         $this->form_validation->set_rules('nama', 'Nama Toko', 'trim|required|xss_clean');
         $this->form_validation->set_rules('entitas', 'Entitas', 'trim|required|xss_clean');
@@ -63,8 +90,8 @@ class Toko_rpk extends REST_Controller{
                     'ALAMAT_TOKO' => $this->post('alamat', TRUE),
                     'TELP_TOKO' => $this->post('telp', TRUE),
                     'KETERANGAN_TOKO' => $this->post('keterangan', TRUE),
-                    'LONG_TOKO' => '',
-                    'LAT_TOKO' => ''
+                    'LONG_TOKO' => $this->post('long', TRUE),
+                    'LAT_TOKO' => $this->post('lat', TRUE)
                     );
                 $id = ($this->post('idtoko', TRUE)) ? $this->post('idtoko', TRUE) : '';
                 if (empty($id)) {

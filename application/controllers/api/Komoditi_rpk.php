@@ -77,7 +77,7 @@ class Komoditi_rpk extends REST_Controller{
         }
         $entitas = $data_toko['IDENTITAS_TOKO'];
 
-        $data = $this->m_app->myquery_array("SELECT * FROM tb_stok_rpk WHERE noreq_stok_rpk LIKE '%REQ".$entitas."%' ORDER BY id_stok_rpk DESC LIMIT 0,1");
+        $data = $this->m_app->myquery_array("SELECT * FROM tb_stok_rpk WHERE noreq_stok_rpk LIKE '%REQ".$entitas."%' ORDER BY noreq_stok_rpk DESC LIMIT 0,1");
         $number = 0;
         if($data){
             $lastnota = $data[0]['noreq_stok_rpk'];
